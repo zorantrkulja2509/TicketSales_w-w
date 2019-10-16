@@ -18,6 +18,6 @@ Services:
     (2) offer user to buy new tickets
 Domain rules:
   - Admin needs to specify how many tickets are for sale per concert
-  - User cannot by more tickets than available
+  - User cannot buy more tickets than available
   
-Immplement solution using .net core, event based architecture, masstransit. For extra points use clean architecture and event sourcing.
+Implement solution using .net core, event based architecture, masstransit. For extra points use clean architecture and event sourcing.

@@ -24,3 +24,5 @@ Domain rules:
   - User cannot buy more tickets than available
   
 Implement solution using .net core, event based architecture, masstransit. For extra points use clean architecture and event sourcing.
+
+**For rabbitmq virtual host use your name**

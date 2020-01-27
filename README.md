@@ -26,4 +26,5 @@ Domain rules:
 Implement solution using .net core, event based architecture, masstransit. For extra points use clean architecture and event sourcing.
 
 **For rabbitmq virtual host use your name**
+
 **For DBs use in memory DB or embeded DB for easier setup**

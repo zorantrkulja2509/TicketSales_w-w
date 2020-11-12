@@ -1,39 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using MassTransit;
+﻿using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using TicketSales.Admin.Models;
-using TicketSales.Admin.Services;
-using TicketSales.Messages.Commands;
 
 namespace TicketSales.Admin.Controllers
 {
     public class HomeController : Controller
     {
         private readonly IBus _bus;
-        private readonly TestMessageStore _store;
 
-        public HomeController(IBus bus, TestMessageStore store)
+        public HomeController(IBus bus)
         {
-            _bus = bus ?? throw new ArgumentNullException(nameof(bus));
-            _store = store;
         }
 
-        public IActionResult Index()
+        [HttpGet]
+        public async Task<IActionResult> Index()
         {
-            int count = _store.GetCount();
-            return View(count);
-        }
-
-        [HttpPost, ActionName("Index")]
-        public IActionResult IndexPost()
-        {
-            _bus.Send(new TestCommand());
-            int count = _store.GetCount();
-            return View(count);
+            return View();
         }
 
         public IActionResult Privacy()

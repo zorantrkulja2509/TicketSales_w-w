@@ -1,4 +1,4 @@
-﻿using System;
+﻿using AutoMapper;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using TicketSales.Admin.Consumers;
-using TicketSales.Admin.Services;
+using System;
+using TicketSales.Core.Application;
+using TicketSales.Core.Database;
+using TicketSales.Core.Database.Interfaces;
 using TicketSales.Messages.Commands;
+using TicketSales.Messages.Mapper;
 
 namespace TicketSales.Admin
 {
@@ -22,46 +25,55 @@ namespace TicketSales.Admin
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<CookiePolicyOptions>(options =>
             {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddSingleton<TestMessageStore>();
+            services.AddScoped<SaveConcertCommandHandler>();
+            services.AddScoped<GetAllConcertsCommandHandler>();
 
             services.AddMassTransit(x =>
             {
-                x.AddConsumer<TestEventHandler>();
+                x.AddConsumer<SaveConcertCommandHandler>();
+                x.AddConsumer<GetAllConcertsCommandHandler>();
 
                 x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
                 {
-                    var host = cfg.Host("localhost", "tickets", h => { h.Username("guest"); h.Password("guest"); });
+                    var host = cfg.Host("localhost", "zoran", h => { h.Username("guest"); h.Password("guest"); });
 
                     cfg.ReceiveEndpoint(host, "admin", e =>
                     {
                         e.PrefetchCount = 16;
 
-                        e.ConfigureConsumer<TestEventHandler>(provider);
+                        e.ConfigureConsumer<SaveConcertCommandHandler>(provider);
+                        e.ConfigureConsumer<GetAllConcertsCommandHandler>(provider);
 
-                        EndpointConvention.Map<TestCommand>(new Uri("rabbitmq://localhost/tickets/core"));
+                        EndpointConvention.Map<GetAllConcertsCommand>(new Uri("rabbitmq://localhost/zoran/core"));
+                        EndpointConvention.Map<SaveConcertCommand>(new Uri("rabbitmq://localhost/zoran/core"));
                     });
-
-                    // or, configure the endpoints by convention
-                    cfg.ConfigureEndpoints(provider);
                 }));
             });
 
             services.AddHostedService<BusService>();
+            services.AddDbContext<DataContext>();
+            services.AddTransient<IDataContext, DataContext>();
+            services.AddScoped(provider => provider.GetRequiredService<IBus>().CreateRequestClient<SaveConcertCommand>());
+            services.AddScoped(provider => provider.GetRequiredService<IBus>().CreateRequestClient<GetAllConcertsCommand>());
+
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new ConcertMapper());
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -71,7 +83,6 @@ namespace TicketSales.Admin
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 

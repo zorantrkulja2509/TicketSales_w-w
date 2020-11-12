@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{6298E58A-2B9F-476D-8564-B27495D3002C}"
 EndProject
@@ -24,6 +24,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketSales.Admin", "src\TicketSales.Admin\TicketSales.Admin.csproj", "{5BB46DE8-DB81-49C7-95D6-AD9B7DF0A0D8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketSales.User", "src\TicketSales.User\TicketSales.User.csproj", "{B90762CF-2E2C-4BB3-AF7A-0E3C15E7E7D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketSales.Core.Database", "TicketSales.Core.Database\TicketSales.Core.Database.csproj", "{B75A037E-6402-4C3A-8F88-886F45D71720}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,10 @@ Global
 		{B90762CF-2E2C-4BB3-AF7A-0E3C15E7E7D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B90762CF-2E2C-4BB3-AF7A-0E3C15E7E7D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B90762CF-2E2C-4BB3-AF7A-0E3C15E7E7D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B75A037E-6402-4C3A-8F88-886F45D71720}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B75A037E-6402-4C3A-8F88-886F45D71720}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B75A037E-6402-4C3A-8F88-886F45D71720}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B75A037E-6402-4C3A-8F88-886F45D71720}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,6 +79,7 @@ Global
 		{D7203DC3-318C-446C-BDCD-8B5CFAEF7CF4} = {281E9561-8522-4629-AAD0-A6AEB22BD8AB}
 		{5BB46DE8-DB81-49C7-95D6-AD9B7DF0A0D8} = {6566DC16-D1DF-4817-B158-895EC6FBE378}
 		{B90762CF-2E2C-4BB3-AF7A-0E3C15E7E7D2} = {6566DC16-D1DF-4817-B158-895EC6FBE378}
+		{B75A037E-6402-4C3A-8F88-886F45D71720} = {281E9561-8522-4629-AAD0-A6AEB22BD8AB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5A8E4E20-6221-45A0-98CB-619F34E2B9B2}

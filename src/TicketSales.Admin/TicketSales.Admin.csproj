@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="MassTransit" Version="5.5.5" />
     <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="5.5.5" />
+    <PackageReference Include="MassTransit.Extensions.Logging" Version="5.5.5" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="5.5.5" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
@@ -16,6 +17,8 @@
 
 
   <ItemGroup>
+    <ProjectReference Include="..\TicketSales.Core\TicketSales.Core.Application\TicketSales.Core.Application.csproj" />
+    <ProjectReference Include="..\TicketSales.Core\TicketSales.Core.Web\TicketSales.Core.Web.csproj" />
     <ProjectReference Include="..\TicketSales.Core\TicketSales.Messages\TicketSales.Messages.csproj" />
   </ItemGroup>
 

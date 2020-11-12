@@ -1,5 +1,3 @@
-using System;
-
 namespace TicketSales.Admin.Models
 {
     public class ErrorViewModel

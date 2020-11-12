@@ -1,0 +1,37 @@
+﻿@{
+    ViewData["Title"] = "Concerts";
+}
+
+<div class="text-center">
+    <h1 class="text-left pb-5">Concerts</h1>
+    <div>
+        <table class="table table-striped">
+            <thead>
+                <tr class="row">
+                    <th class="col-md-4">Name</th>
+                    <th class="col-md-4">Number of ticket </th>
+                    <th class="col-md-4">Number of remaining tickets</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var concert in Model)
+                {
+                    <tr class="row">
+                        <td class="col-md-4"><span>@concert.Name</span></td>
+                        <td class="col-md-4"><span class=" numberOfRemainingTickets">@concert.NumberOfTickets</span></td>
+                        <td class="col-md-4"><span class="col-md-6">@concert.NumberOfRemainingTickets</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <a class="btn btn-primary float-right" href="/concert/AddConcert">Add new concert</a>
+    </div>
+</div>
+
+
+@section Scripts {
+    @if (TempData["Message"] != null)
+    {
+        <script type="text/javascript">toastr.success("@TempData["Message"]");</script>
+    }
+}

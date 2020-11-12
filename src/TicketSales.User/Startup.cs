@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AutoMapper;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using TicketSales.User.Consumers;
-using TicketSales.User.Services;
+using System;
+using TicketSales.Core.Application;
+using TicketSales.Core.Database;
+using TicketSales.Core.Database.Interfaces;
+using TicketSales.Messages.Commands;
+using TicketSales.Messages.Mapper;
 
 namespace TicketSales.User
 {
@@ -25,45 +25,62 @@ namespace TicketSales.User
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<CookiePolicyOptions>(options =>
             {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-
-            services.AddSingleton<TestMessageStore>();
+            services.AddSingleton<GetAllConcertsCommandHandler>();
+            services.AddSingleton<GetTicketByUserIdCommandHandler>();
+            services.AddScoped<BuyTicketCommandHandler>();
 
             services.AddMassTransit(x =>
             {
-                x.AddConsumer<TestEventHandler>();
+                x.AddConsumer<GetAllConcertsCommandHandler>();
+                x.AddConsumer<GetTicketByUserIdCommandHandler>();
+                x.AddConsumer<BuyTicketCommandHandler>();
 
                 x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
                 {
-                    var host = cfg.Host("localhost", "tickets", h => { h.Username("guest"); h.Password("guest"); });
+                    var host = cfg.Host("localhost", "zoran", h => { h.Username("guest"); h.Password("guest"); });
 
                     cfg.ReceiveEndpoint(host, "user", e =>
                     {
                         e.PrefetchCount = 16;
 
-                        e.ConfigureConsumer<TestEventHandler>(provider);
-                    });
+                        e.ConfigureConsumer<GetAllConcertsCommandHandler>(provider);
+                        e.ConfigureConsumer<GetTicketByUserIdCommandHandler>(provider);
+                        e.ConfigureConsumer<BuyTicketCommandHandler>(provider);
 
-                    // or, configure the endpoints by convention
-                    cfg.ConfigureEndpoints(provider);
+                        EndpointConvention.Map<GetAllConcertsCommand>(new Uri("rabbitmq://localhost/zoran/core"));
+                        EndpointConvention.Map<GetTicketByUserIdCommand>(new Uri("rabbitmq://localhost/zoran/core"));
+                        EndpointConvention.Map<BuyTicketCommand>(new Uri("rabbitmq://localhost/zoran/core"));
+                    });
                 }));
             });
 
             services.AddHostedService<BusService>();
+            services.AddDbContext<DataContext>();
+            services.AddTransient<IDataContext, DataContext>();
+            services.AddScoped(provider => provider.GetRequiredService<IBus>().CreateRequestClient<GetAllConcertsCommand>());
+            services.AddScoped(provider => provider.GetRequiredService<IBus>().CreateRequestClient<GetTicketByUserIdCommand>());
+            services.AddScoped(provider => provider.GetRequiredService<IBus>().CreateRequestClient<BuyTicketCommand>());
+
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new ConcertMapper());
+                mc.AddProfile(new TicketMapper());
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -73,7 +90,6 @@ namespace TicketSales.User
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 

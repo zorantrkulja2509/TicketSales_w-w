@@ -1,0 +1,66 @@
+﻿@{
+    ViewData["Title"] = "Concerts";
+}
+
+<div class="text-center">
+    <h1 class="text-left pb-5">Concerts</h1>
+    <div>
+        <table class="table table-striped">
+            <thead>
+                <tr class="row">
+                    <th class="col-md-4">Name</th>
+                    <th class="col-md-4">Number of remaining tickets</th>
+                    <th class="col-md-2">Number of ticket</th>
+                    <th class="col-md-2"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var concert in Model)
+                {
+                    <tr class="row">
+                        <td class="col-md-4"><span>@concert.Name</span></td>
+                        <td class="col-md-4"><span class=" numberOfRemainingTickets">@concert.NumberOfRemainingTickets</span></td>
+                        <td class="col-md-2"><input class="numberOfTickets col-md-6" type="number" name="numberOfTicket" min="0" /></td>
+                        <td class="col-md-2"><input type="button" value="Buy" onclick="buyTickets(this, @concert.Id)" /></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+@section scripts
+{
+    <script type="text/javascript">
+
+        function buyTickets(event, concertId) {
+
+            var numberOfTickets = $(event).closest('.row').find(".numberOfTickets").val();
+            var numberOfRemainingTickets = $(event).closest('.row').find(".numberOfRemainingTickets").text();
+
+            if (parseInt(numberOfTickets) < 0) {
+                toastr.error("Not valid number of tickets!");
+            } else {
+                if (parseInt(numberOfTickets) > parseInt(numberOfRemainingTickets)) {
+                    toastr.error("You cannot buy more tickets than the remaining tickets!");
+                } else {
+                    var url = "@Url.Action("BuyTickets", "Concert")";
+
+                    var model = { ConcertId: concertId, NumberOfTickets: numberOfTickets, UserId: 2};
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: model,
+                        cache: false,
+                        success: function (result) {
+                            window.location.reload();
+                        }
+
+                    });
+                }
+            }
+        }
+    </script>
+}

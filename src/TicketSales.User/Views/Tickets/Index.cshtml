@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Previously bought tickets";
+}
+
+<div class="text-center">
+    <h1 class="text-left pb-5">Previously bought tickets</h1>
+    <div>
+        <table class="table table-striped">
+            <thead>
+                <tr class="row">
+                    <th class="col-md-6">Concert</th>
+                    <th class="col-md-6">Number of tickets</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var concert in Model)
+                {
+                    <tr class="row">
+                        <td class="col-md-6"><span class="col-md-6">@concert.Concert</span></td>
+                        <td class="col-md-6"><span class=" numberOfRemainingTickets">@concert.NumberOfTickets</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

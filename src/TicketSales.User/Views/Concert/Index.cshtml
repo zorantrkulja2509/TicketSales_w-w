@@ -55,7 +55,17 @@
                         data: model,
                         cache: false,
                         success: function (result) {
-                            window.location.reload();
+                            toastr.success(
+                                'Tickets successfully bought',
+                                '',
+                                {
+                                    timeOut: 500,
+                                    fadeOut: 500,
+                                    onHidden: function () {
+                                        window.location.reload();
+                                    }
+                                }
+                            );
                         }
 
                     });
